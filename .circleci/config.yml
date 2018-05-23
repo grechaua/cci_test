@@ -1,0 +1,35 @@
+jobs:
+  build:
+    docker:
+      - image: buildpack-deps:jessie
+    environment:
+      - SOME_VAR: some_var_1
+    working_directory: /tmp/workspace
+    branches:
+      only:
+        - master
+    steps:
+        - run: make test
+  deploy-aws:
+    docker:
+      - image: buildpack-deps:jessie
+    environment:
+      - SOME_VAR: some_var_2
+    working_directory: /tmp/workspace
+    branches:
+      only:
+        - master
+    steps:
+        - run: make test
+
+version: 2
+  release-branch-workflow:
+    jobs:
+      - build
+        #      - request-testing:
+        #  requires:
+        #    - build
+      - deploy-aws:
+          type: approval
+          requires:
+            - request-testing
